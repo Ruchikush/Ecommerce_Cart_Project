@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, FlatList} from 'react-native';
+import {View, FlatList, StyleSheet} from 'react-native';
 import {useSelector} from 'react-redux';
 import ProductCard from '../components/ProductCard';
 import {fetchProducts} from '../api/api';
@@ -11,7 +11,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const loadProducts = async () => {
       const data = await fetchProducts();
-      // Ensure every product has a quantity, even if it's not in cart
+
       const updatedProducts = data.map(product => {
         const cartItem = cartItems.find(item => item.id === product.id);
         return {...product, quantity: cartItem ? cartItem.quantity : 0};
@@ -20,15 +20,23 @@ export default function HomeScreen() {
     };
 
     loadProducts();
-  }, [cartItems]); // Depend on cartItems to update when cart changes
+  }, [cartItems]);
 
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList
         data={products}
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => <ProductCard product={item} />}
+        numColumns={1}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+});
